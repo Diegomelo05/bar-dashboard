@@ -5,3 +5,10 @@ backend/.env
 frontend/node_modules/
 frontend/dist/
 *.pyc
+
+# wrangler files
+.wrangler
+.dev.vars*
+!.dev.vars.example
+.env*
+!.env.example
