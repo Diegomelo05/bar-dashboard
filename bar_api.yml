@@ -1,0 +1,17 @@
+version: "3.8"
+
+services:
+  bar_api:
+    image: bar_api:latest
+    environment:
+      - DATABASE_URL=postgresql://postgres:REDACTED@postgres/bardash
+    networks:
+      - network_swarm_public
+    deploy:
+      replicas: 1
+      restart_policy:
+        condition: on-failure
+
+networks:
+  network_swarm_public:
+    external: true
