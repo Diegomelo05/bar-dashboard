@@ -1,18 +1,22 @@
+import os
+from pathlib import Path
 from sqlalchemy import create_engine
 from sqlalchemy.orm import declarative_base, sessionmaker
-from pydantic_settings import BaseSettings
 
 
-class Settings(BaseSettings):
-    database_url: str = "postgresql://postgres:postgres@localhost:5432/bardash"
+def _load_database_url() -> str:
+    secret = Path("/run/secrets/database_url")
+    if secret.exists():
+        return secret.read_text().strip()
+    url = os.getenv("DATABASE_URL")
+    if url:
+        return url
+    raise RuntimeError(
+        "DATABASE_URL not configured: set DATABASE_URL env var or create 'database_url' Docker secret"
+    )
 
-    class Config:
-        env_file = ".env"
 
-
-settings = Settings()
-
-engine = create_engine(settings.database_url)
+engine = create_engine(_load_database_url())
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 Base = declarative_base()
 

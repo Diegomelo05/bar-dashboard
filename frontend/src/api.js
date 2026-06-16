@@ -4,6 +4,23 @@ const api = axios.create({
   baseURL: import.meta.env.VITE_API_URL || 'http://localhost:8000',
 })
 
+api.interceptors.request.use((config) => {
+  const key = localStorage.getItem('api_key')
+  if (key) config.headers['X-API-Key'] = key
+  return config
+})
+
+api.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    if (error.response?.status === 401) {
+      localStorage.removeItem('api_key')
+      window.location.href = '/login'
+    }
+    return Promise.reject(error)
+  }
+)
+
 // Dashboard
 export const getDashboard = () => api.get('/dashboard/').then(r => r.data)
 

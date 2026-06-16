@@ -1,5 +1,5 @@
-import { NavLink, useLocation } from 'react-router-dom'
-import { LayoutDashboard, CreditCard, ShoppingCart, TrendingDown, UserX, Users } from 'lucide-react'
+import { NavLink, useNavigate } from 'react-router-dom'
+import { LayoutDashboard, CreditCard, ShoppingCart, TrendingDown, UserX, Users, LogOut } from 'lucide-react'
 import './Layout.css'
 
 const navItems = [
@@ -12,6 +12,13 @@ const navItems = [
 ]
 
 export default function Layout({ children }) {
+  const navigate = useNavigate()
+
+  function handleLogout() {
+    localStorage.removeItem('api_key')
+    navigate('/login', { replace: true })
+  }
+
   return (
     <div className="layout">
       <aside className="sidebar">
@@ -32,6 +39,10 @@ export default function Layout({ children }) {
             </NavLink>
           ))}
         </nav>
+        <button className="logout-btn" onClick={handleLogout} title="Sair">
+          <LogOut size={16} />
+          <span>Sair</span>
+        </button>
       </aside>
 
       <main className="main-content">

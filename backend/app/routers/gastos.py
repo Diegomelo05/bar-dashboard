@@ -21,7 +21,9 @@ def registrar_gasto(payload: GastoCreate, db: Session = Depends(get_db)):
     caixa_id = payload.caixa_id
     if not caixa_id:
         caixa = db.query(Caixa).filter(Caixa.status == "aberto").first()
-        caixa_id = caixa.id if caixa else None
+        if not caixa:
+            raise HTTPException(status_code=400, detail="Abra o caixa antes de registrar gastos")
+        caixa_id = caixa.id
     gasto = Gasto(
         caixa_id=caixa_id,
         descricao=payload.descricao,

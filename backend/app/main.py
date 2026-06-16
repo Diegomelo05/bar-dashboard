@@ -1,11 +1,20 @@
-from fastapi import FastAPI
+import os
+from fastapi import FastAPI, Depends
 from fastapi.middleware.cors import CORSMiddleware
 from .database import engine, Base
 from .routers import caixa, vendas, gastos, clientes, fiado, dashboard
+from .auth import require_api_key
 
 Base.metadata.create_all(bind=engine)
 
-app = FastAPI(title="Bar Dashboard API", version="1.0.0")
+_production = os.getenv("ENVIRONMENT") == "production"
+
+app = FastAPI(
+    title="Bar Dashboard API",
+    version="1.0.0",
+    docs_url=None if _production else "/docs",
+    redoc_url=None if _production else "/redoc",
+)
 
 app.add_middleware(
     CORSMiddleware,
@@ -15,14 +24,21 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-app.include_router(dashboard.router)
-app.include_router(caixa.router)
-app.include_router(vendas.router)
-app.include_router(gastos.router)
-app.include_router(clientes.router)
-app.include_router(fiado.router)
+_auth = [Depends(require_api_key)]
+
+app.include_router(dashboard.router, dependencies=_auth)
+app.include_router(caixa.router, dependencies=_auth)
+app.include_router(vendas.router, dependencies=_auth)
+app.include_router(gastos.router, dependencies=_auth)
+app.include_router(clientes.router, dependencies=_auth)
+app.include_router(fiado.router, dependencies=_auth)
 
 
 @app.get("/health")
 def health():
     return {"status": "ok"}
+
+
+@app.post("/auth/verify", dependencies=_auth)
+def verify():
+    return {"ok": True}

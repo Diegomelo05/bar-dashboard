@@ -70,6 +70,29 @@
   border-color: rgba(245, 158, 11, 0.15);
 }
 
+.logout-btn {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 8px;
+  padding: 9px 12px;
+  border-radius: var(--radius-sm);
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text-muted);
+  background: none;
+  border: 1px solid transparent;
+  cursor: pointer;
+  width: calc(100% - 16px);
+  transition: all 0.15s;
+}
+
+.logout-btn:hover {
+  background: var(--red-dim);
+  color: var(--red);
+  border-color: rgba(239, 68, 68, 0.15);
+}
+
 /* Main content */
 .main-content {
   margin-left: var(--sidebar-w);
