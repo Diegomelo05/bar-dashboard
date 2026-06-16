@@ -135,8 +135,8 @@ export default function Dashboard() {
                   <Legend
                     wrapperStyle={{ fontSize: 11, color: 'var(--text-secondary)' }}
                   />
-                  <Bar dataKey="vendas" name="Vendas" fill="#f59e0b" radius={[3, 3, 0, 0]} />
-                  <Bar dataKey="gastos" name="Gastos" fill="#ef4444" radius={[3, 3, 0, 0]} />
+                  <Bar dataKey="vendas" name="Vendas" fill="#FFB000" radius={[2, 2, 0, 0]} />
+                  <Bar dataKey="gastos" name="Gastos" fill="#FF2D78" radius={[2, 2, 0, 0]} />
                 </BarChart>
               </ResponsiveContainer>
             </div>

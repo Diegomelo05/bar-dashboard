@@ -3,7 +3,8 @@
   min-height: 100dvh;
 }
 
-/* Sidebar */
+/* ─── Sidebar ────────────────────────────────────── */
+
 .sidebar {
   width: var(--sidebar-w);
   background: var(--bg-card);
@@ -26,16 +27,20 @@
 }
 
 .logo-icon {
-  font-size: 20px;
+  font-size: 18px;
   color: var(--amber);
   line-height: 1;
+  filter: drop-shadow(0 0 6px var(--amber));
 }
 
 .logo-text {
-  font-size: 18px;
-  font-weight: 800;
+  font-family: 'Orbitron', monospace;
+  font-size: 15px;
+  font-weight: 900;
   color: var(--text-primary);
-  letter-spacing: -0.02em;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  text-shadow: 0 0 10px rgba(255, 176, 0, 0.28);
 }
 
 .sidebar-nav {
@@ -52,22 +57,29 @@
   gap: 10px;
   padding: 9px 12px;
   border-radius: var(--radius-sm);
-  font-size: 13px;
-  font-weight: 500;
-  color: var(--text-secondary);
+  font-family: 'Orbitron', monospace;
+  font-size: 9px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text-muted);
   transition: all 0.15s;
   border: 1px solid transparent;
+  border-left: 2px solid transparent;
 }
 
 .nav-item:hover {
   background: var(--bg-card-hover);
-  color: var(--text-primary);
+  color: var(--text-secondary);
+  border-left-color: var(--border-hover);
 }
 
 .nav-item.active {
   background: var(--amber-glow);
   color: var(--amber);
-  border-color: rgba(245, 158, 11, 0.15);
+  border-color: rgba(255, 176, 0, 0.1);
+  border-left-color: var(--amber);
+  text-shadow: 0 0 8px rgba(255, 176, 0, 0.4);
 }
 
 .logout-btn {
@@ -77,8 +89,11 @@
   margin: 8px;
   padding: 9px 12px;
   border-radius: var(--radius-sm);
-  font-size: 13px;
-  font-weight: 500;
+  font-family: 'Orbitron', monospace;
+  font-size: 9px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
   color: var(--text-muted);
   background: none;
   border: 1px solid transparent;
@@ -90,10 +105,11 @@
 .logout-btn:hover {
   background: var(--red-dim);
   color: var(--red);
-  border-color: rgba(239, 68, 68, 0.15);
+  border-color: rgba(255, 45, 120, 0.2);
 }
 
-/* Main content */
+/* ─── Main content ───────────────────────────────── */
+
 .main-content {
   margin-left: var(--sidebar-w);
   flex: 1;
@@ -101,7 +117,8 @@
   overflow-y: auto;
 }
 
-/* Bottom nav — mobile only */
+/* ─── Bottom nav — mobile ────────────────────────── */
+
 .bottom-nav {
   display: none;
   position: fixed;
@@ -120,14 +137,18 @@
   gap: 3px;
   padding: 8px 4px;
   flex: 1;
-  font-size: 10px;
-  font-weight: 500;
+  font-family: 'Orbitron', monospace;
+  font-size: 7px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
   color: var(--text-muted);
   transition: color 0.15s;
 }
 
 .bottom-item.active {
   color: var(--amber);
+  text-shadow: 0 0 8px rgba(255, 176, 0, 0.4);
 }
 
 @media (max-width: 768px) {
