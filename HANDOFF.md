@@ -43,8 +43,9 @@ Usuário
 /root/bar/
 ├── backend/
 │   ├── app/
-│   │   ├── main.py          # FastAPI app, CORS, routers
-│   │   ├── database.py      # Conexão SQLAlchemy + PostgreSQL
+│   │   ├── main.py          # FastAPI app, CORS, routers; /docs desativado em produção
+│   │   ├── auth.py          # Middleware de API key (lê Docker secret ou env API_KEY)
+│   │   ├── database.py      # Conexão SQLAlchemy; lê DATABASE_URL de Docker secret
 │   │   ├── models.py        # Tabelas: Caixa, Venda, Gasto, Cliente, Fiado
 │   │   ├── schemas.py       # Pydantic schemas (request/response)
 │   │   └── routers/
@@ -58,14 +59,16 @@ Usuário
 │   └── requirements.txt
 ├── frontend/
 │   ├── src/
-│   │   ├── App.jsx          # Rotas React Router
-│   │   ├── api.js           # Todas as chamadas à API
+│   │   ├── App.jsx          # Rotas React Router + RequireAuth guard
+│   │   ├── api.js           # Axios: interceptor X-API-Key + redirect 401 → /login
 │   │   ├── utils.js         # fmt() para R$, fmtDate()
-│   │   ├── index.css        # Design system (variáveis CSS)
+│   │   ├── index.css        # Design system (variáveis CSS + media queries mobile)
 │   │   ├── components/
-│   │   │   ├── Layout.jsx   # Sidebar desktop + bottom nav mobile
+│   │   │   ├── Layout.jsx   # Sidebar desktop + bottom nav mobile + botão logout
 │   │   │   └── Layout.css
 │   │   └── pages/
+│   │       ├── Login.jsx    # Tela de login (valida chave via POST /auth/verify)
+│   │       ├── Login.css
 │   │       ├── Dashboard.jsx
 │   │       ├── Caixa.jsx
 │   │       ├── Vendas.jsx
@@ -74,7 +77,7 @@ Usuário
 │   │       └── Clientes.jsx
 │   ├── .env                 # VITE_API_URL (não commitado)
 │   └── .env.example
-├── bar_api.yml              # Docker Swarm stack do backend
+├── bar_api.yml              # Docker Swarm stack do backend (NÃO commitado — tem secrets)
 ├── deploy-frontend.sh       # Script de redeploy manual
 ├── .github/
 │   └── workflows/
@@ -84,12 +87,52 @@ Usuário
 
 ---
 
+## Autenticação
+
+O frontend requer uma chave de acesso (API key) para usar a aplicação.
+
+### Como funciona
+
+1. O usuário acessa `/login` e digita a senha
+2. O frontend faz `POST /auth/verify` com o header `X-API-Key: <senha>`
+3. Se válida, a chave é salva em `localStorage` e o usuário é redirecionado ao dashboard
+4. Todas as requisições da API incluem o header `X-API-Key` via interceptor do axios
+5. Em caso de resposta `401`, o usuário é redirecionado automaticamente para `/login`
+
+### Onde a chave é armazenada (backend)
+
+O backend lê a chave em ordem de prioridade:
+1. Docker secret `/run/secrets/bar_api_key` (produção)
+2. Variável de ambiente `API_KEY` (desenvolvimento local)
+
+### Alterar a API key
+
+Docker secrets são imutáveis enquanto em uso. Para trocar:
+
+```bash
+# 1. Derrubar o stack
+docker stack rm bar_api
+
+# 2. Remover o secret
+docker secret rm bar_api_key
+
+# 3. Recriar com nova chave
+echo -n "NOVA_CHAVE" | docker secret create bar_api_key -
+
+# 4. Redeployar
+docker stack deploy -c /root/bar/bar_api.yml bar_api --with-registry-auth
+```
+
+---
+
 ## Banco de Dados
 
 **Host:** `postgres` (rede overlay `network_swarm_public`)
 **Banco:** `bardash`
-**Usuário:** `postgres`
-**Senha:** ver `/root/.credentials`
+**Usuário:** `bar_api` (usuário dedicado, acesso restrito apenas ao banco `bardash`)
+**Senha:** ver `/root/.credentials` → `BAR_DB_PASS`
+
+> O usuário `postgres` (superusuário) é reservado para o n8n. O bar usa `bar_api` com privilégios mínimos para não afetar outros serviços no mesmo servidor.
 
 ### Tabelas
 
@@ -157,7 +200,28 @@ bash /root/bar/deploy-frontend.sh
 
 ---
 
-## Traefik
+## Traefik — CORS
+
+O middleware `bar-cors` em `/opt/n8n/traefik_dynamic.yml` deve incluir `X-API-Key` nos headers permitidos:
+
+```yaml
+middlewares:
+  bar-cors:
+    headers:
+      accessControlAllowOriginList:
+        - "https://bar.dmelo.uk"
+        - "http://localhost:5173"
+      accessControlAllowMethods: [GET, POST, PUT, PATCH, DELETE, OPTIONS]
+      accessControlAllowHeaders:
+        - "Content-Type"
+        - "X-API-Key"
+      accessControlMaxAge: 300
+      addVaryHeader: true
+```
+
+> Se o header `X-API-Key` não estiver em `accessControlAllowHeaders`, o browser bloqueia o preflight OPTIONS e o login retorna "Senha incorreta" mesmo com a chave correta.
+
+## Traefik — Roteamento
 
 A rota do backend está em `/opt/n8n/traefik_dynamic.yml`:
 
@@ -201,12 +265,35 @@ Todas as chaves estão em `/root/.credentials` (chmod 600).
 | `CF_TOKEN_PAGES` | Deploy no Cloudflare Pages |
 | `CF_TOKEN_DNS` | Editar DNS da zona dmelo.uk |
 | `GH_TOKEN` | Push para GitHub |
-| `POSTGRES_PASSWORD` | Conexão ao banco bardash |
+| `POSTGRES_PASSWORD` | Superusuário postgres (n8n) — não usar no bar |
+| `BAR_DB_USER` | Usuário Postgres do bar (`bar_api`) |
+| `BAR_DB_PASS` | Senha do usuário `bar_api` |
+| `BAR_API_KEY` | Senha de acesso ao frontend/API |
+
+### Docker secrets ativos no servidor
+
+```bash
+docker secret ls
+# bar_api_key    — API key do bar
+# database_url   — connection string PostgreSQL do bar
+```
+
+---
+
+## Visual / UI
+
+Design system baseado em CSS custom properties. Paleta: dark (fundo `#0f1117`) + âmbar (`#f59e0b`).
+
+- **Fonte:** Plus Jakarta Sans (Google Fonts)
+- **Responsividade:** sidebar some em ≤ 768px, substituída por bottom navigation. Inputs com `font-size: 16px` para evitar zoom automático no iOS.
+- **Arquivo principal:** `frontend/src/index.css` (variáveis globais + classes reutilizáveis + media queries)
+- **Layout:** `frontend/src/components/Layout.css` (sidebar, bottom-nav, media queries de layout)
 
 ---
 
 ## Funcionalidades
 
+- **Login** — tela de senha antes de acessar qualquer página
 - **Dashboard** — status do caixa, totais do dia, gráfico 7 dias, atalhos rápidos
 - **Caixa** — abrir/fechar com saldo inicial e final, histórico de caixas
 - **Vendas** — registrar por produto/quantidade/valor/categoria, cancelar
