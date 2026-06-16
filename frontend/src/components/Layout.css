@@ -51,12 +51,14 @@
   align-items: center;
   gap: 10px;
   padding: 9px 12px;
+  padding-left: 9px;
   border-radius: var(--radius-sm);
   font-size: 13px;
   font-weight: 500;
   color: var(--text-secondary);
   transition: all 0.15s;
   border: 1px solid transparent;
+  border-left: 3px solid transparent;
 }
 
 .nav-item:hover {
@@ -68,6 +70,8 @@
   background: var(--amber-glow);
   color: var(--amber);
   border-color: rgba(245, 158, 11, 0.15);
+  border-left-color: var(--amber);
+  padding-left: 9px;
 }
 
 .logout-btn {

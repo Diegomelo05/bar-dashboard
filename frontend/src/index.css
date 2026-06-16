@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&display=swap');
+
 *, *::before, *::after {
   box-sizing: border-box;
   margin: 0;
@@ -31,7 +33,7 @@
   --sidebar-w: 220px;
   --nav-h: 56px;
 
-  font-family: 'Inter', system-ui, sans-serif;
+  font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
   font-size: 14px;
   line-height: 1.5;
   color: var(--text-primary);
@@ -40,7 +42,8 @@
 }
 
 body {
-  background: var(--bg-base);
+  background: linear-gradient(180deg, #121520 0%, var(--bg-base) 50%) fixed;
+  background-color: var(--bg-base);
   min-height: 100dvh;
 }
 
@@ -136,6 +139,7 @@ input, select, textarea {
 .stat-card {
   background: var(--bg-card);
   border: 1px solid var(--border);
+  border-top: 2px solid rgba(245, 158, 11, 0.35);
   border-radius: var(--radius-md);
   padding: 16px 18px;
 }
@@ -188,6 +192,7 @@ input, select, textarea {
 .btn-primary:hover:not(:disabled) {
   background: var(--amber-dim);
   border-color: var(--amber-dim);
+  box-shadow: 0 4px 14px rgba(245, 158, 11, 0.3);
 }
 
 .btn-ghost {
@@ -480,4 +485,89 @@ input, select, textarea {
   padding: 10px 14px;
   color: var(--red);
   font-size: 13px;
+}
+
+/* ─── Mobile ─────────────────────────────────────── */
+
+@media (max-width: 768px) {
+  .page {
+    padding: 16px;
+  }
+
+  .page-header {
+    margin-bottom: 18px;
+  }
+
+  .page-title {
+    font-size: 18px;
+  }
+
+  .stat-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+  }
+
+  .stat-card {
+    padding: 14px;
+  }
+
+  .stat-value {
+    font-size: 21px;
+  }
+
+  /* Previne zoom automático do iOS ao focar campos */
+  .form-input {
+    font-size: 16px;
+    padding: 10px 12px;
+  }
+
+  .btn {
+    padding: 10px 14px;
+  }
+
+  .btn-icon {
+    padding: 8px;
+  }
+
+  .card {
+    padding: 16px;
+  }
+
+  .item-row {
+    padding: 10px 12px;
+    gap: 8px;
+  }
+
+  .tabs {
+    width: 100%;
+  }
+
+  .tab {
+    flex: 1;
+    text-align: center;
+    padding: 7px 6px;
+    font-size: 12px;
+  }
+
+  .modal {
+    padding: 20px 16px;
+  }
+
+  .modal-overlay {
+    padding: 12px;
+  }
+}
+
+@media (max-width: 480px) {
+  .form-row {
+    grid-template-columns: 1fr;
+  }
+
+  .stat-value {
+    font-size: 19px;
+  }
+
+  .stat-card {
+    padding: 12px;
+  }
 }
