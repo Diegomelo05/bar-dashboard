@@ -4,6 +4,22 @@ from sqlalchemy.orm import relationship
 from .database import Base
 
 
+class Produto(Base):
+    __tablename__ = "produtos"
+
+    id = Column(Integer, primary_key=True, index=True)
+    nome = Column(String(200), nullable=False)
+    preco_custo = Column(Float, nullable=False)
+    preco_venda = Column(Float, nullable=False)
+    categoria = Column(String(50), default="outros")
+    ativo = Column(Boolean, default=True)
+    quantidade_estoque = Column(Integer, default=0)
+    estoque_minimo = Column(Integer, default=0)
+    criado_em = Column(DateTime, default=datetime.utcnow)
+
+    vendas = relationship("Venda", back_populates="produto")
+
+
 class Caixa(Base):
     __tablename__ = "caixas"
 
@@ -24,14 +40,17 @@ class Venda(Base):
 
     id = Column(Integer, primary_key=True, index=True)
     caixa_id = Column(Integer, ForeignKey("caixas.id"), nullable=False)
+    produto_id = Column(Integer, ForeignKey("produtos.id"), nullable=True)
     descricao = Column(String(200), nullable=False)
     quantidade = Column(Float, default=1.0)
     valor_unitario = Column(Float, nullable=False)
     valor_total = Column(Float, nullable=False)
+    preco_custo = Column(Float, nullable=True)  # snapshot do custo no momento da venda
     categoria = Column(String(50), default="outros")  # bebida | comida | outros
     created_at = Column(DateTime, default=datetime.utcnow)
 
     caixa = relationship("Caixa", back_populates="vendas")
+    produto = relationship("Produto", back_populates="vendas")
 
 
 class Gasto(Base):

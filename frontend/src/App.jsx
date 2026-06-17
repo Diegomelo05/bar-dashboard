@@ -6,6 +6,7 @@ import Vendas from './pages/Vendas'
 import Gastos from './pages/Gastos'
 import Fiado from './pages/Fiado'
 import Clientes from './pages/Clientes'
+import Produtos from './pages/Produtos'
 import Login from './pages/Login'
 
 function RequireAuth({ children }) {
@@ -30,6 +31,7 @@ export default function App() {
                 <Route path="gastos" element={<Gastos />} />
                 <Route path="fiado" element={<Fiado />} />
                 <Route path="clientes" element={<Clientes />} />
+                <Route path="produtos" element={<Produtos />} />
               </Routes>
             </Layout>
           </RequireAuth>

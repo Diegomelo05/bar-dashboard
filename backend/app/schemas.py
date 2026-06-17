@@ -33,21 +33,62 @@ class CaixaResumo(CaixaOut):
     num_vendas: int = 0
 
 
+# --- Produto ---
+class ProdutoCreate(BaseModel):
+    nome: str
+    preco_custo: float
+    preco_venda: float
+    categoria: str = "outros"
+    estoque_minimo: int = 0
+    quantidade_estoque: int = 0
+
+
+class ProdutoUpdate(BaseModel):
+    nome: Optional[str] = None
+    preco_custo: Optional[float] = None
+    preco_venda: Optional[float] = None
+    categoria: Optional[str] = None
+    estoque_minimo: Optional[int] = None
+    ativo: Optional[bool] = None
+
+
+class ProdutoOut(BaseModel):
+    id: int
+    nome: str
+    preco_custo: float
+    preco_venda: float
+    categoria: str
+    ativo: bool
+    quantidade_estoque: int
+    estoque_minimo: int
+    criado_em: datetime
+
+    model_config = {"from_attributes": True}
+
+
+class EntradaEstoque(BaseModel):
+    quantidade: int
+
+
 # --- Venda ---
 class VendaCreate(BaseModel):
+    produto_id: Optional[int] = None
     descricao: str
     quantidade: float = 1.0
     valor_unitario: float
     categoria: str = "outros"
+    preco_custo: Optional[float] = None
 
 
 class VendaOut(BaseModel):
     id: int
     caixa_id: int
+    produto_id: Optional[int]
     descricao: str
     quantidade: float
     valor_unitario: float
     valor_total: float
+    preco_custo: Optional[float]
     categoria: str
     created_at: datetime
 

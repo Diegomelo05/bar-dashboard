@@ -1,11 +1,18 @@
 import os
 from fastapi import FastAPI, Depends
 from fastapi.middleware.cors import CORSMiddleware
+from sqlalchemy import text
 from .database import engine, Base
-from .routers import caixa, vendas, gastos, clientes, fiado, dashboard
+from .routers import caixa, vendas, gastos, clientes, fiado, dashboard, produtos
 from .auth import require_api_key
 
 Base.metadata.create_all(bind=engine)
+
+# Migração incremental: adiciona colunas novas à tabela vendas (idempotente)
+with engine.connect() as _conn:
+    _conn.execute(text("ALTER TABLE vendas ADD COLUMN IF NOT EXISTS produto_id INTEGER REFERENCES produtos(id)"))
+    _conn.execute(text("ALTER TABLE vendas ADD COLUMN IF NOT EXISTS preco_custo FLOAT"))
+    _conn.commit()
 
 _production = os.getenv("ENVIRONMENT") == "production"
 
@@ -32,6 +39,7 @@ app.include_router(vendas.router, dependencies=_auth)
 app.include_router(gastos.router, dependencies=_auth)
 app.include_router(clientes.router, dependencies=_auth)
 app.include_router(fiado.router, dependencies=_auth)
+app.include_router(produtos.router, dependencies=_auth)
 
 
 @app.get("/health")

@@ -52,3 +52,10 @@ export const getFiados = (params) => api.get('/fiado/', { params }).then(r => r.
 export const registrarFiado = (payload) => api.post('/fiado/', payload).then(r => r.data)
 export const pagarFiado = (id) => api.patch(`/fiado/${id}/pagar`).then(r => r.data)
 export const deletarFiado = (id) => api.delete(`/fiado/${id}`).then(r => r.data)
+
+// Produtos
+export const getProdutos = (apenasAtivos = true) => api.get('/produtos/', { params: { apenas_ativos: apenasAtivos } }).then(r => r.data)
+export const criarProduto = (payload) => api.post('/produtos/', payload).then(r => r.data)
+export const atualizarProduto = (id, payload) => api.put(`/produtos/${id}`, payload).then(r => r.data)
+export const deletarProduto = (id) => api.delete(`/produtos/${id}`).then(r => r.data)
+export const entradaEstoque = (id, quantidade) => api.post(`/produtos/${id}/entrada`, { quantidade }).then(r => r.data)

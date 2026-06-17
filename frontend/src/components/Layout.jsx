@@ -1,5 +1,5 @@
 import { NavLink, useNavigate } from 'react-router-dom'
-import { LayoutDashboard, CreditCard, ShoppingCart, TrendingDown, UserX, Users, LogOut } from 'lucide-react'
+import { LayoutDashboard, CreditCard, ShoppingCart, TrendingDown, UserX, Users, Package, LogOut } from 'lucide-react'
 import './Layout.css'
 
 const navItems = [
@@ -9,6 +9,7 @@ const navItems = [
   { to: '/gastos', icon: TrendingDown, label: 'Gastos' },
   { to: '/fiado', icon: UserX, label: 'Fiado' },
   { to: '/clientes', icon: Users, label: 'Clientes' },
+  { to: '/produtos', icon: Package, label: 'Produtos' },
 ]
 
 export default function Layout({ children }) {
